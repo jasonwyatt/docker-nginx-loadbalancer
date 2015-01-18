@@ -98,6 +98,7 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
 
 '''
 
+import sys
 import os
 import re
 import argparse
@@ -138,7 +139,7 @@ def build_conf(hosts, services):
     return template.render(hosts=hosts, services=services)
 
 def parse_env(env=os.environ):
-    prefix = env.get('FIG_NAME')
+    prefix = env.get('ENV_PREFIX')
     if prefix:
         prefix = prefix.upper() + '_'
         print 'Using prefix: %s' % (prefix)
@@ -156,10 +157,10 @@ def parse_env(env=os.environ):
         m = link_pattern.match(var)
         if m:
             service_name = m.group('service_name')
-            print 'Found service: %s' % service_name
             if service_name in services:
                 services[service_name]['addresses'].append(value)
             else:
+                print 'Found service: %s' % service_name
                 services[service_name] = {
                     'addresses': [value],
                     'balancing_type': None,
@@ -225,6 +226,7 @@ if __name__ == "__main__":
         exit(0)
 
     conf_contents = build_conf(hosts, services)
+    sys.stdout.flush()
     if args.test == 'conf':
         print "Contents of proxy.conf:%s" % conf_contents.replace('\n', '\n    ')
         exit(0)
@@ -233,13 +235,18 @@ if __name__ == "__main__":
     f.write(conf_contents)
     f.close()
 
-    print "Starting Nginx..."
+    sys.stdout.write("Starting Nginx...\n")
+    sys.stdout.flush()
 
-    p = subprocess.Popen(['nginx'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
-    for line in iter(p.stdout.readline, b''):
-        print line,
+    p = subprocess.Popen(['nginx'], stdout=subprocess.PIPE, bufsize=0)
+    while True:
+        char = p.stdout.read(1)
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        if char == '' and p.poll() != None:
+            break
+
     p.stdout.close()
-    p.wait()
 
 
 

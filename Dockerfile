@@ -12,7 +12,6 @@ ADD sites-enabled/ /etc/nginx/sites-enabled/
 ADD ssl/ /etc/nginx/ssl/
 ADD nginx.conf /etc/nginx/
 
-
 ADD scripts/ /scripts/
 
 VOLUME ["/etc/nginx/ssl/", "/scripts/"]
