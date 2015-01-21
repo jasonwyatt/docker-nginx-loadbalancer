@@ -78,19 +78,19 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
      
         ssl_session_timeout 5m;
     
-        ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
         ssl_ciphers "HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES";
         ssl_prefer_server_ciphers on;
 
         root /usr/share/nginx/html;
 
         location / {
-            proxy_pass http://webapp:80;
+            proxy_pass http://webapp:80/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
         }
         location /api/ {
-            proxy_pass http://api:80;
+            proxy_pass http://api:80/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
         }
