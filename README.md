@@ -1,8 +1,6 @@
 # docker-nginx-loadbalancer
 
-This script will be run on start-up to evaluate the Docker link environment 
-variables and automatically generate upstream and location modules for 
-reverse-proxying and load-balancing.
+This image will auto-generate its own config file for a load-balancer.
 
 It looks for environment variables in the following formats:
 
