@@ -9,6 +9,8 @@ It looks for environment variables in the following formats:
 
 Optional/Conditional environment variables:
 
+    <service-name>_REMOTE_PORT=<remoteport> (optional - default: 80)
+    <service-name>_REMOTE_PATH=<remotepath> (optional - default: /)
     <service-name>_BALANCING_TYPE=[ip_hash|least_conn] (optional)
     <service-name>_EXPOSE_PROTOCOL=[http|https|both] (optional - default: http)
     <service-name>_HOSTNAME=<vhostname> (required if <service-name>_EXPOSE_PROTOCOL is https or both)
@@ -25,6 +27,8 @@ Example:
     WEBAPP_3_PORT_80_TCP_ADDR=192.168.0.4
     API_1_PORT_80_TCP_ADDR=192.168.0.5
     API_2_PORT_80_TCP_ADDR=192.168.0.6
+    TOMCAT_1_PORT_8080_TCP_ADDR=192.168.0.7
+    TOMCAT_2_PORT_8080_TCP_ADDR=192.168.0.8
 
     # special environment variables
     WEBAPP_PATH=/
@@ -36,6 +40,9 @@ Example:
     API_HOSTNAME=www.example.com
     WWW_EXAMPLE_COM_SSL_CERTIFICATE=something.pem
     WWW_EXAMPLE_COM_SSL_CERTIFICATE_KEY=something.key
+    TOMCAT_PATH=/javaapp
+    TOMCAT_REMOTE_PORT=8080
+    TOMCAT_REMOTE_PATH=/javaapp
 
 Generates (/etc/nginx/sites-enabled/proxy.conf):
 
@@ -51,6 +58,11 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
         server 192.168.0.6;
     }
 
+    upstream tomcat {
+        server 192.168.0.7;
+        server 192.168.0.8;
+    }
+
     server {
         listen 80;
         listen [::]:80 ipv6only=on;
@@ -59,7 +71,7 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
         root /usr/share/nginx/html;
 
         location / {
-            proxy_pass http://webapp:80;
+            proxy_pass http://webapp:80/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
         }
@@ -91,6 +103,19 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
         }
         location /api/ {
             proxy_pass http://api:80/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+    }
+
+    server {
+        listen 80;
+        listen [::]:80 ipv6only=on;
+
+        root /usr/share/nginx/html;
+
+        location /javaapp {
+            proxy_pass http://tomcat:8080/javaapp;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
         }
