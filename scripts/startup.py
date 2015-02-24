@@ -147,8 +147,8 @@ def parse_env(env=os.environ):
         prefix = ''
         print 'No fig prefix found.'
 
-    link_pattern = re.compile(r'^%s(?P<service_name>[a-zA-Z_]+)(_[\d]+)?_PORT_80_TCP_ADDR$' % (prefix))
-    
+    link_pattern = re.compile(r'^%s(?P<service_name>[a-zA-Z_]+)(_[\d]+)?_PORT_(?P<service_port>[\d]+)_TCP_ADDR$' % (prefix))
+
     services = {}
     hosts = {}
 
@@ -157,18 +157,25 @@ def parse_env(env=os.environ):
         m = link_pattern.match(var)
         if m:
             service_name = m.group('service_name')
+            service_port = int(m.group('service_port'))
+            if service_port != 80:
+                service_port = env.get('%s_REMOTE_PORT' % (service_name))
+                if not service_port:
+                    continue
             if service_name in services:
                 services[service_name]['addresses'].append(value)
             else:
                 print 'Found service: %s' % service_name
                 services[service_name] = {
                     'addresses': [value],
+                    'port': service_port,
                     'balancing_type': None,
                 }
 
     # find service details
     for service_name, value in services.iteritems():
         path = value['location'] = env.get('%s_PATH' % (service_name))
+        remote_path = value['remote_path'] = env.get('%s_REMOTE_PATH' % (service_name), '/')
         balancing_type = value['balancing_type'] = env.get('%s_BALANCING_TYPE' % (service_name))
         expose_protocol = value['expose_protocol'] = env.get('%s_EXPOSE_PROTOCOL' % (service_name), 'http')
         hostname = value['host'] = env.get('%s_HOSTNAME' % (service_name))
