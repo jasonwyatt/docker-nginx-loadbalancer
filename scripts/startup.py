@@ -210,11 +210,11 @@ def parse_env(env=os.environ):
 
             assert ssl_certificate, 'SSL certificate .pem not provided for https host: %s, please set %s_SSL_CERTIFICATE' % (hostname, formatted_hostname)
             assert ssl_certificate_key, 'SSL certificate .key not provided for https host: %s, please set %s_SSL_CERTIFICATE_KEY' % (hostname, formatted_hostname)
-            assert os.path.isfile(os.path.join('/etc/nginx/ssl/', ssl_certificate)), 'SSL certificate file: %s could not be found for %s' (ssl_certificate, hostname)
-            assert os.path.isfile(os.path.join('/etc/nginx/ssl/', ssl_certificate_key)), 'SSL certificate file: %s could not be found for %s' (ssl_certificate_key, hostname)
+            assert os.path.isfile(os.path.join('/etc/nginx/', ssl_certificate)), 'SSL certificate file: %s could not be found for %s' % (ssl_certificate, hostname)
+            assert os.path.isfile(os.path.join('/etc/nginx/', ssl_certificate_key)), 'SSL certificate file: %s could not be found for %s' % (ssl_certificate_key, hostname)
 
             value['ssl_certificate'] = ssl_certificate
-            value['ssl_key'] = ssl_certificate_key
+            value['ssl_certificate_key'] = ssl_certificate_key
 
     return hosts, services
 
