@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
-This script will be run on start-up to evaluate the Docker link environment 
-variables and automatically generate upstream and location modules for 
+This script will be run on start-up to evaluate the Docker link environment
+variables and automatically generate upstream and location modules for
 reverse-proxying and load-balancing.
 
 It looks for environment variables in the following formats:
@@ -41,9 +41,9 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
 
     upstream webapp {
         ip_hash;
-        server 192.168.0.2;    
-        server 192.168.0.3;    
-        server 192.168.0.4;    
+        server 192.168.0.2;
+        server 192.168.0.3;
+        server 192.168.0.4;
     }
 
     upstream api {
@@ -68,16 +68,16 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
     server {
         listen 443;
         server_name www.example.com;
-    
+
         root html;
         index index.html index.htm;
-    
+
         ssl on;
         ssl_certificate ssl/something.pem;
         ssl_certificate_key ssl/something.key;
-     
+
         ssl_session_timeout 5m;
-    
+
         ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
         ssl_ciphers "HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES";
         ssl_prefer_server_ciphers on;
@@ -113,15 +113,15 @@ env = Environment(
         )
     )
 parser = argparse.ArgumentParser(
-    description='Docker-based Nginx Load Balancer Startup Script', 
+    description='Docker-based Nginx Load Balancer Startup Script',
     formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument(
-    '-t', 
-    '--test', 
-    action='store', 
-    choices=['conf', 'parse'], 
+    '-t',
+    '--test',
+    action='store',
+    choices=['conf', 'parse'],
     help=textwrap.dedent('''\
-    Test against your environment variables 
+    Test against your environment variables
     without modifying the config files.
         'conf' - Preview the generated Nginx config file's contents.
         'parse' - View a detailed parsing of the environment.
@@ -208,13 +208,13 @@ def parse_env(env=os.environ):
             ssl_certificate = env.get('%s_SSL_CERTIFICATE' % formatted_hostname)
             ssl_certificate_key = env.get('%s_SSL_CERTIFICATE_KEY' % formatted_hostname)
 
-            assert ssl_certificate, 'SSL certificate .pem not provided for https host: %s, please set %s_SSL_CERTIFICATE' % (hostname, formatted_hostname) 
+            assert ssl_certificate, 'SSL certificate .pem not provided for https host: %s, please set %s_SSL_CERTIFICATE' % (hostname, formatted_hostname)
             assert ssl_certificate_key, 'SSL certificate .key not provided for https host: %s, please set %s_SSL_CERTIFICATE_KEY' % (hostname, formatted_hostname)
-            assert os.path.isfile(os.path.join('/etc/nginx/ssl/', ssl_certificate)), 'SSL certificate file: %s could not be found for %s' (ssl_certificate, hostname)
-            assert os.path.isfile(os.path.join('/etc/nginx/ssl/', ssl_certificate_key)), 'SSL certificate file: %s could not be found for %s' (ssl_certificate_key, hostname)
+            assert os.path.isfile(os.path.join('/etc/nginx/', ssl_certificate)), 'SSL certificate file: %s could not be found for %s' % (ssl_certificate, hostname)
+            assert os.path.isfile(os.path.join('/etc/nginx/', ssl_certificate_key)), 'SSL certificate file: %s could not be found for %s' % (ssl_certificate_key, hostname)
 
             value['ssl_certificate'] = ssl_certificate
-            value['ssl_key'] = ssl_certificate_key
+            value['ssl_certificate_key'] = ssl_certificate_key
 
     return hosts, services
 
@@ -254,15 +254,3 @@ if __name__ == "__main__":
             break
 
     p.stdout.close()
-
-
-
-
-
-
-
-
-
-
-
-

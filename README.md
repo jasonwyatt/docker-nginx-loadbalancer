@@ -74,6 +74,9 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
             proxy_pass http://webapp:80/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_buffering off;
         }
     }
 
@@ -100,11 +103,17 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
             proxy_pass http://webapp:80/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_buffering off;
         }
         location /api/ {
             proxy_pass http://api:80/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_buffering off;
         }
     }
 
@@ -118,5 +127,8 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
             proxy_pass http://tomcat:8080/javaapp;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_buffering off;
         }
     }

@@ -19,5 +19,4 @@ VOLUME ["/etc/nginx/ssl/", "/scripts/"]
 EXPOSE 80 443
 
 WORKDIR /scripts/
-ENTRYPOINT ["python", "startup.py"]
-CMD []
+CMD ["python", "startup.py"]
