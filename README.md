@@ -14,6 +14,9 @@ Optional/Conditional environment variables:
     <service-name>_BALANCING_TYPE=[ip_hash|least_conn] (optional)
     <service-name>_EXPOSE_PROTOCOL=[http|https|both] (optional - default: http)
     <service-name>_HOSTNAME=<vhostname> (required if <service-name>_EXPOSE_PROTOCOL is https or both)
+    <service-name>_ACCESS_LOG=[/dev/stdout|off] (optional - default: /dev/stdout)
+    <service-name>_ERROR_LOG=[/dev/stdout|/dev/null] (optional - default: /dev/stdout)
+    <service-name>_LOG_LEVEL=[emerg|alert|crit|error|warn|notice|info|debug'] (optional - default: error)
     <env-formatted-vhostname>_SSL_CERTIFICATE=<something.pem> (required if the vhost will need ssl support)
     <env-formatted-vhostname>_SSL_CERTIFICATE_KEY=<something.key> (required if the vhost will need ssl support)
 
@@ -35,6 +38,9 @@ Example:
     WEBAPP_BALANCING_TYPE=ip_hash
     WEBAPP_EXPOSE_PROTOCOL=both
     WEBAPP_HOSTNAME=www.example.com
+    WEBAPP_ACCESS_LOG=off
+    WEBAPP_ERROR_LOG=/dev/stdout
+    WEBAPP_LOG_LEVEL=emerg
     API_PATH=/api/
     API_EXPOSE_PROTOCOL=https
     API_HOSTNAME=www.example.com
@@ -68,6 +74,9 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
         listen [::]:80 ipv6only=on;
         server_name www.example.com;
 
+        error_log /dev/stdout emerg;
+        access_log off;
+
         root /usr/share/nginx/html;
 
         location / {
@@ -83,16 +92,16 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
     server {
         listen 443;
         server_name www.example.com;
-    
+
         root html;
         index index.html index.htm;
-    
+
         ssl on;
         ssl_certificate ssl/something.pem;
         ssl_certificate_key ssl/something.key;
-     
+
         ssl_session_timeout 5m;
-    
+
         ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
         ssl_ciphers "HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES";
         ssl_prefer_server_ciphers on;

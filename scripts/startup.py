@@ -204,6 +204,14 @@ def parse_env(env=os.environ):
 
     for hostname, value in hosts.iteritems():
         formatted_hostname = format_hostname(hostname)
+
+        access_log = value['access_log'] = env.get('%s_ACCESS_LOG' % (service_name), '/dev/stdout')
+        log_level = value['log_level'] = env.get('%s_LOG_LEVEL' % (service_name), 'error')
+        error_log = value['error_log'] = env.get('%s_ERROR_LOG' % (service_name), '/dev/stdout')
+        assert access_log in ['/dev/stdout', 'off'], 'Invalid value for %s_ERROR_LOG: %s, must be "/dev/stdout" or "off"' % (service_name, access_log)
+        assert log_level in [None, 'emerg', 'alert', 'crit', 'error', 'warn', 'notice', 'info', 'debug'], 'Invalid value for %s_LOG_LEVEL: %s, must be "emerg", "alert", "crit", "error", "warn", "notice", "info", "debug" or nonexistant.' % (service_name, log_level)
+        assert error_log in ['/dev/stdout', '/dev/null'], 'Invalid value for %s_ERROR_LOG: %s, must be "/dev/stdout" or "/dev/null"' % (service_name, error_log)
+
         if value['protocols']['https']:
             ssl_certificate = env.get('%s_SSL_CERTIFICATE' % formatted_hostname)
             ssl_certificate_key = env.get('%s_SSL_CERTIFICATE_KEY' % formatted_hostname)
