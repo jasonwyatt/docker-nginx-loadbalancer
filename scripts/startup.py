@@ -218,11 +218,18 @@ def parse_env(env=os.environ):
 
             assert ssl_certificate, 'SSL certificate .pem not provided for https host: %s, please set %s_SSL_CERTIFICATE' % (hostname, formatted_hostname)
             assert ssl_certificate_key, 'SSL certificate .key not provided for https host: %s, please set %s_SSL_CERTIFICATE_KEY' % (hostname, formatted_hostname)
+            assert ssl_dhparam, 'SSL dhparam .pem not provided for https host: %s, please set %s_SSL_DHPARAM' % (hostname, formatted_hostname)
             assert os.path.isfile(os.path.join('/etc/nginx/', ssl_certificate)), 'SSL certificate file: %s could not be found for %s' % (ssl_certificate, hostname)
             assert os.path.isfile(os.path.join('/etc/nginx/', ssl_certificate_key)), 'SSL certificate file: %s could not be found for %s' % (ssl_certificate_key, hostname)
+            assert os.path.isfile(os.path.join('/etc/nginx/', ssl_certificate_key)), 'SSL dhparam file: %s could not be found for %s' % (ssl_dhparam, hostname)
+            assert ssl_ciphers, 'SSL ciphers have not been provided for https host: %s, please set %s_SSL_CIPHERS (e.g. %s_SSL_CIPHERS="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256")' % (hostname, formatted_hostname)
+            assert ssl_protocols, 'SSL protocols have not been provided for https host: %s, please set %s_SSL_PROTOCOLS (e.g. %s_SSL_PROTOCOLS=TLSv1.2)' % (hostname, formatted_hostname)
 
             value['ssl_certificate'] = ssl_certificate
             value['ssl_certificate_key'] = ssl_certificate_key
+            value['ssl_dhparam'] = ssl_dhparam
+            value['ssl_ciphers'] = ssl_ciphers
+            value['ssl_protocols'] = ssl_protocols
 
     return hosts, services
 
