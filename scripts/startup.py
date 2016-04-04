@@ -215,6 +215,9 @@ def parse_env(env=os.environ):
         if value['protocols']['https']:
             ssl_certificate = env.get('%s_SSL_CERTIFICATE' % formatted_hostname)
             ssl_certificate_key = env.get('%s_SSL_CERTIFICATE_KEY' % formatted_hostname)
+            ssl_dhparam = env.get('%s_SSL_DHPARAM' % formatted_hostname)
+            ssl_ciphers = env.get('%s_SSL_CIPHERS' % formatted_hostname)
+            ssl_protocols = env.get('%s_SSL_PROTOCOLS' % formatted_hostname)
 
             assert ssl_certificate, 'SSL certificate .pem not provided for https host: %s, please set %s_SSL_CERTIFICATE' % (hostname, formatted_hostname)
             assert ssl_certificate_key, 'SSL certificate .key not provided for https host: %s, please set %s_SSL_CERTIFICATE_KEY' % (hostname, formatted_hostname)
