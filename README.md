@@ -19,6 +19,9 @@ Optional/Conditional environment variables:
     <service-name>_LOG_LEVEL=[emerg|alert|crit|error|warn|notice|info|debug'] (optional - default: error)
     <env-formatted-vhostname>_SSL_CERTIFICATE=<something.pem> (required if the vhost will need ssl support)
     <env-formatted-vhostname>_SSL_CERTIFICATE_KEY=<something.key> (required if the vhost will need ssl support)
+    <env-formatted-vhostname>_SSL_DHPARAM=<dhparam.pem> (required if the vhost will need ssl support)
+    <env-formatted-vhostname>_SSL_CIPHERS=<"colon separated ciphers wrapped in quotes"> (required if the vhost will need ssl support)
+    <env-formatted-vhostname>_SSL_PROTOCOLS=<protocol (e.g. TLSv1.2)> (required if the vhost will need ssl support)
 
 And will build an nginx config file.
 
@@ -44,8 +47,11 @@ Example:
     API_PATH=/api/
     API_EXPOSE_PROTOCOL=https
     API_HOSTNAME=www.example.com
-    WWW_EXAMPLE_COM_SSL_CERTIFICATE=something.pem
-    WWW_EXAMPLE_COM_SSL_CERTIFICATE_KEY=something.key
+    WWW_EXAMPLE_COM_SSL_CERTIFICATE=ssl/something.pem
+    WWW_EXAMPLE_COM_SSL_CERTIFICATE_KEY=ssl/something.key
+    WWW_EXAMPLE_COM_SSL_DHPARAM=ssl/dhparam.pem
+    WWW_EXAMPLE_COM_SSL_CIPHERS="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256"
+    WWW_EXAMPLE_COM_SSL_PROTOCOLS=TLSv1.2
     TOMCAT_PATH=/javaapp
     TOMCAT_REMOTE_PORT=8080
     TOMCAT_REMOTE_PATH=/javaapp
@@ -99,11 +105,14 @@ Generates (/etc/nginx/sites-enabled/proxy.conf):
         ssl on;
         ssl_certificate ssl/something.pem;
         ssl_certificate_key ssl/something.key;
+        
+        # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
+        ssl_dhparam ssl/dhparam.pem;
 
         ssl_session_timeout 5m;
 
-        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-        ssl_ciphers "HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES";
+        ssl_protocols TLSv1.2;
+        ssl_ciphers "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256";
         ssl_prefer_server_ciphers on;
 
         root /usr/share/nginx/html;
